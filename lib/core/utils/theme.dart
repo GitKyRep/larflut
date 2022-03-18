@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Color primaryColor = const Color(0xffe06060);
-Color secondaryColor = const Color(0xffe74646);
-Color accentColor = const Color(0xff4e7aff);
+Color primaryColor = const Color(0xff5564FF);
+Color secondaryColor = const Color(0xff0A1820);
+Color accentColor = const Color(0xff819099);
 Color blueLightColor = const Color(0xff61C0FE);
 Color greenLightColor = const Color(0xff68D3B8);
 Color redLightColor = const Color(0xffFE6868);

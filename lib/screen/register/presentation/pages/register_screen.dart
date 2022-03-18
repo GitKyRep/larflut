@@ -5,26 +5,19 @@ import 'package:larflut/core/widgets/custom_button.dart';
 import 'package:larflut/core/widgets/custom_textfield.dart';
 import 'package:larflut/core/widgets/custom_textfield_password.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<
       FormState>(); //key untuk form digunakan untuk ketika proses save
-  String? username;
+  String? name;
+  String? email;
   String? password;
-  bool _obscureText = true;
-
-  // Toggles show password
-  void _togglePassword() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
 
   @override
   void initState() {
@@ -45,39 +38,48 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    child: Center(
-                      child: Image.asset(
-                        "assets/images/login_image.png",
-                        height: 250,
-                      ),
+                  Center(
+                    child: Image.asset(
+                      "assets/images/register_image.png",
+                      height: 200,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    "Login",
-                    style: blackTextStyle.copyWith(
-                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "Silahkan login untuk masuk aplikasi",
+                    "Register",
+                    style: blackTextStyle.copyWith(
+                        fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    "Silahkan Daftar terlebih dahulu",
                     style: greyTextStyle.copyWith(
                       fontSize: 12,
                     ),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
                   //memanggil wideget customtextfield
                   CustomTextfield(
                     readonly: false,
-                    hintText: Strings.username,
-                    onSaved: (value) => username = value,
+                    hintText: Strings.name,
+                    onSaved: (value) => name = value,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return Strings.errorEmpty;
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextfield(
+                    readonly: false,
+                    hintText: Strings.email,
+                    onSaved: (value) => email = value,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return Strings.errorEmpty;
@@ -88,8 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomTextfieldPassword(
                     hintText: Strings.password,
                     onSaved: (value) => password = value,
-                    obscureText: _obscureText,
-                    togglePassword: _togglePassword,
+                    obscureText: false,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return Strings.errorEmpty;
@@ -104,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         form.save();
                       }
                     },
-                    text: "Login",
+                    text: "Register",
                     color: primaryColor,
                     textColor: whiteColor,
                   ),
@@ -115,16 +116,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        "Don't have an account ? ",
+                        "Already have an account ? ",
                         style: blackTextStyle,
                       ),
                       GestureDetector(
                         onTap: () {
-                          //pindah ke form login
-                          Navigator.pushReplacementNamed(context, "/register");
+                          //pindah halaman ke form register
+                          Navigator.pushReplacementNamed(context, "/login");
                         },
                         child: Text(
-                          Strings.register,
+                          Strings.login,
                           style: blackTextStyle.copyWith(color: primaryColor),
                         ),
                       ),

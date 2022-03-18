@@ -1,5 +1,7 @@
 class Strings {
   static const String appsName = "LarFlut";
+  static const String name = "Nama";
+  static const String email = "Email";
   static const String username = "Username";
   static const String password = "Password";
   static const String errorEmpty = "Data tidak boleh kosong";
@@ -18,4 +20,6 @@ class Strings {
   static const String pleaseWait = "Mohon Tunggu";
   static const String confirmation = "Konfirmasi";
   static const String dataNotAvailable = "Data Tidak Tersedia";
+  static const String login = "Login";
+  static const String register = "Register";
 }
