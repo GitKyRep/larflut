@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'logging.dart';
 
 class ApiBaseHelper {
-  static const String endPointDemo = 'http://localhost:8000/api/v1/';
+  static const String endPointDemo = 'http://spos.skom.id/api/v1/';
   static BaseOptions opts = BaseOptions(
     baseUrl: endPointDemo,
     contentType: Headers.formUrlEncodedContentType,
@@ -40,11 +40,10 @@ class ApiBaseHelper {
 
   Future<Response?> postHTTP(String url, dynamic data) async {
     try {
-      print("params $data");
       Response response = await dio.post(url, data: data);
       return response;
     } on DioError catch (e) {
-      // Handle error
+      print("error api ${e.message}");
     }
   }
 

@@ -1,9 +1,14 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:larflut/core/utils/strings.dart';
 import 'package:larflut/core/utils/theme.dart';
 import 'package:larflut/core/widgets/custom_button.dart';
 import 'package:larflut/core/widgets/custom_textfield.dart';
 import 'package:larflut/core/widgets/custom_textfield_password.dart';
+import 'package:larflut/screen/register/presentation/blocs/register/register_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -18,10 +23,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? name;
   String? email;
   String? password;
+  bool _obscureText = true;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  // Toggles show password
+  void _togglePassword() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 
   @override
@@ -73,6 +86,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (value == null || value.isEmpty) {
                         return Strings.errorEmpty;
                       }
+                      if (value.length < 4) {
+                        return "Nama minimal 4 karakter";
+                      }
                       return null;
                     },
                   ),
@@ -90,19 +106,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   CustomTextfieldPassword(
                     hintText: Strings.password,
                     onSaved: (value) => password = value,
-                    obscureText: false,
+                    obscureText: _obscureText,
+                    togglePassword: _togglePassword,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return Strings.errorEmpty;
+                      }
+                      if (value.length < 8) {
+                        return "Password harus lebih dari 8 karakter";
                       }
                       return null;
                     },
                   ),
                   CustomButton(
                     press: () {
-                      final form = _formKey.currentState!;
+                      final form =
+                          _formKey.currentState!; //get current state form
+                      //check validate form
                       if (form.validate()) {
-                        form.save();
+                        form.save(); //set form save
+                        _register(); //call method register
                       }
                     },
                     text: "Register",
@@ -131,6 +154,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
+                  //get action when get response with bloc listener
+                  BlocListener<RegisterBloc, RegisterState>(
+                    listener: (_, response) {
+                      //when response get error
+                      if (response is RegisterError) {
+                        final error = response.error;
+                        String? message = error.message;
+                        AwesomeDialog(
+                          context: context,
+                          animType: AnimType.TOPSLIDE,
+                          headerAnimationLoop: false,
+                          dialogType: DialogType.ERROR,
+                          showCloseIcon: false,
+                          dismissOnTouchOutside: false,
+                          title: Strings.error,
+                          desc: message,
+                          btnOkText: Strings.ok,
+                          btnOkOnPress: () {},
+                        ).show();
+                      }
+                      //when state bloc is register success
+                      if (response is RegisterSuccess) {
+                        //when response get success is true
+                        if (response.mRegisterModel?.success ?? false) {
+                          AwesomeDialog(
+                            context: context,
+                            animType: AnimType.TOPSLIDE,
+                            headerAnimationLoop: false,
+                            dialogType: DialogType.SUCCES,
+                            showCloseIcon: false,
+                            dismissOnTouchOutside: false,
+                            title: Strings.success,
+                            desc: response.mRegisterModel!.message,
+                            btnOkText: Strings.ok,
+                            btnOkOnPress: () {
+                              Navigator.pushReplacementNamed(context, "/login");
+                            },
+                          ).show();
+                        } else {
+                          //when response get success is false
+                          AwesomeDialog(
+                            context: context,
+                            animType: AnimType.TOPSLIDE,
+                            headerAnimationLoop: false,
+                            dialogType: DialogType.INFO,
+                            showCloseIcon: false,
+                            dismissOnTouchOutside: false,
+                            title: Strings.information,
+                            desc: response.mRegisterModel!.message,
+                            btnOkText: Strings.ok,
+                            btnOkOnPress: () {},
+                          ).show();
+                        }
+                      }
+                    },
+                    child: Container(),
+                  ),
                 ],
               ),
             ),
@@ -138,5 +218,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  _register() async {
+    EasyLoading.show(status: Strings.pleaseWait); //show loading
+    Future.delayed(const Duration(seconds: 3)).then((value) {
+      //init params with data type form data
+      FormData params = FormData.fromMap({
+        "name": name,
+        "email": email,
+        "password": password,
+      });
+      context
+          .read<RegisterBloc>()
+          .add(Register(params)); //call bloc with event register
+      EasyLoading.dismiss(); //close loading when get response
+    });
   }
 }
